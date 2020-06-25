@@ -13,8 +13,31 @@ class table
     vector<string> name;
 
   public:
-    void setnumber(double n, string key) {}
-    optional<double> getnumber(string key) {}
+    void setnumber(double n, string key)
+    {
+        for (size_t i = 0; i < name.size(); i++)
+        {
+            if (name[i] == key)
+            {
+                num[i] = n;
+                return;
+            }
+        }
+        num.push_back(n);
+        name.push_back(key);
+    }
+
+    optional<double> getnumber(string key)
+    {
+        for (size_t i = 0; i < name.size(); i++)
+        {
+            if (name[i] == key)
+            {
+                return num[i];
+            }
+        }
+        return nullopt;
+    }
 };
 
 int main()
@@ -29,7 +52,7 @@ int main()
         std::string next_token;
         if (!(line_input >> next_token))
             continue;
-        if ( next_token == "let")
+        if (next_token == "let")
         {
             line_input >> next_token;
             string key = next_token;
@@ -44,17 +67,7 @@ int main()
 
             do
             {
-
-                if (next_token != "+" && next_token != "-" &&
-                    next_token != "*" && next_token != "/")
-                {
-                    std::stringstream token(next_token);
-                    double n;
-                    token >> n;
-                    number.push_back(n);
-                }
-
-                else if (isalpha(next_token[0]))
+                if (isalpha(next_token[0]))
                 {
                     auto x = variables.getnumber(next_token);
                     if (x)
@@ -67,6 +80,14 @@ int main()
                         break;
                     }
                 }
+                else if (next_token != "+" && next_token != "-" &&
+                         next_token != "*" && next_token != "/")
+                {
+                    std::stringstream token(next_token);
+                    double n;
+                    token >> n;
+                    number.push_back(n);
+                }
                 else
                 {
                     if (number.size() < 2)
@@ -74,30 +95,29 @@ int main()
                         cout << "Too few operands" << endl;
                         break;
                     }
+                    double x = number.back();
+                    number.pop_back();
+                    double y = number.back();
+                    number.pop_back();
+                    double z;
+                    if (next_token == "+")
+                    {
+                        z = x + y;
+                    }
+                    if (next_token == "-")
+                    {
+                        z = y - x;
+                    }
+                    if (next_token == "*")
+                    {
+                        z = x * y;
+                    }
+                    if (next_token == "/")
+                    {
+                        z = y / x;
+                    }
+                    number.push_back(z);
                 }
-
-                double x = number.back();
-                number.pop_back();
-                double y = number.back();
-                number.pop_back();
-                double z;
-                if (next_token == "+")
-                {
-                    z = x + y;
-                }
-                if (next_token == "-")
-                {
-                    z = y - x;
-                }
-                if (next_token == "*")
-                {
-                    z = x * y;
-                }
-                if (next_token == "/")
-                {
-                    z = y / x;
-                }
-                number.push_back(z);
             } while (line_input >> next_token);
 
             if (number.size() > 1)
