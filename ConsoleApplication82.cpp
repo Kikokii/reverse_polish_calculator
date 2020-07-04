@@ -4,6 +4,8 @@
 #include <sstream>
 #include <string>
 #include <vector>
+#include <tuple>
+#include <algorithm>
 using namespace std;
 
 class table
@@ -20,6 +22,15 @@ class table
             if (name[i] == key)
             {
                 num[i] = n;
+                string tempname = name[i];
+                double tempnum = num[i];
+                for (size_t j = i + 1; j < name.size(); j ++) {
+                    name[j - 1] = name[j];
+                    num[j - 1] = num[j];
+                }
+                name.back() = tempname;
+                num.back() = tempnum;
+
                 return;
             }
         }
@@ -38,6 +49,13 @@ class table
         }
         return nullopt;
     }
+
+    std::tuple<string, double> getentry(size_t index) const
+    {
+        return tuple(name[index], num[index]);
+    }
+
+    size_t getnumberofentries() const { return name.size(); }
 };
 
 int main()
@@ -62,9 +80,18 @@ int main()
             token >> n;
             variables.setnumber(n, key);
         }
+        else if (next_token == "show")
+        {
+            size_t size = variables.getnumberofentries();
+
+            for (size_t i = size - std::min(size_t(10), size); i < size; i++)
+            {
+                auto [a, b] = variables.getentry(i);
+                cout << a << " " << b << endl;
+            }
+        }
         else
         {
-
             do
             {
                 if (isalpha(next_token[0]))
